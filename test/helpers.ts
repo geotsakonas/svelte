@@ -4,60 +4,6 @@ import glob from 'tiny-glob/sync';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as colors from 'kleur';
-export const assert = (assert$1 as unknown) as typeof assert$1 & { htmlEqual: (actual, expected, message?) => void, htmlEqualWithComments: (actual, expected, message?) => void };
-
-// for coverage purposes, we need to test source files,
-// but for sanity purposes, we need to test dist files
-export function loadSvelte(test: boolean = false) {
-	process.env.TEST = test ? 'true' : '';
-
-	const resolved = require.resolve('../compiler.js');
-
-	delete require.cache[resolved];
-	return require(resolved);
-}
-
-export const svelte = loadSvelte();
-
-export function exists(path) {
-	try {
-		fs.statSync(path);
-		return true;
-	} catch (err) {
-		return false;
-	}
-}
-
-export function tryToLoadJson(file) {
-	try {
-		return JSON.parse(fs.readFileSync(file, 'utf-8'));
-	} catch (err) {
-		if (err.code !== 'ENOENT') throw err;
-		return null;
-	}
-}
-
-export function tryToReadFile(file) {
-	try {
-		return fs.readFileSync(file, 'utf-8');
-	} catch (err) {
-		if (err.code !== 'ENOENT') throw err;
-		return null;
-	}
-}
-
-export function cleanRequireCache() {
-	Object.keys(require.cache)
-		.filter(x => x.endsWith('.svelte'))
-		.forEach(file => delete require.cache[file]);
-}
-
-const virtualConsole = new jsdom.VirtualConsole();
-virtualConsole.sendTo(console);
-
-const window = new jsdom.JSDOM('<main></main>', { virtualConsole }).window;
-global.document = window.document;
-global.navigator = window.navigator;
 global.getComputedStyle = window.getComputedStyle;
 global.requestAnimationFrame = null; // placeholder, filled in using set_raf
 global.window = window;
